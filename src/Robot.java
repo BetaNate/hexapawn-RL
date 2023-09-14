@@ -1,2 +1,4 @@
-public class Robot {
+
+
+public class Robot extends User{
 }
