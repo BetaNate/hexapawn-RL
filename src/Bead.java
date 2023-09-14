@@ -26,8 +26,8 @@ public class Bead {
         this.move = moveType;
     }
 
-    public Line renderBead(MatchBoxSquare start, MatchBoxSquare end) {
-        Line beadLine = new Line(start.getPosX(), start.getPosY(), end.getPosX(), end.getPosY());
+    public Line renderBead(Pawn start, Square end) {
+        Line beadLine = new Line(start.getXPos(), start.getYPos(), end.getXPos(), end.getYPos());
         beadLine.setStroke(this.color);
 
         return beadLine;

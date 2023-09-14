@@ -1,12 +1,11 @@
-import javafx.scene.layout.Stackpane;
+import javafx.scene.layout.StackPane;
 
-public class MatchboxSquare extends StackPane {
-   private ArrayList<Bead> beads;
-   private int x, y;
-   private boolean hasPiece;
-   private String name;
+public class Square extends StackPane {
+   int x, y;
+   boolean hasPiece;
+   String name;
 
-   public MatchboxSquare(int x, int y) {
+   public Square(int x, int y) {
     this.x = x;
     this.y = y;
     this.hasPiece = false;

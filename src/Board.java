@@ -1,22 +1,23 @@
-import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import java.util.ArrayList;
+import javafx.scene.paint.Color;
 
-public class Matchbox {
-    private final GridPane board;
-    public ArrayList<MatchboxSquare> squares = new ArrayList<>();
+public class Board {
+    public final GridPane board;
+    public ArrayList<Square> squares = new ArrayList<>();
     private final int size = 3;
 
 
     public Board(GridPane board) {
         this.board = board;
+        generateBox(this.board);
     }
 
     private void generateBox(GridPane board) {
 
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
-                MatchboxSquare square = new MatchboxSquare(i,j);
+                Square square = new Square(i,j);
                 square.setName("Position" + i + j);
                 square.setPrefHeight(100);
                 square.setPrefWidth(100);
@@ -27,24 +28,24 @@ public class Matchbox {
                 squares.add(square);
             }
         }
-        addBeads();
+        addPawns();
     }
-
-    private void addPawn(MatchboxSquare square, Pawn pawn) {
-        square.getchildren().add(pawn);
+ 
+    private void addPawn(Square square, Pawn pawn) {
+        square.getChildren().add(pawn);
         square.hasPiece = true;
     }
 
     private void addPawns() {
-        for(MatchboxSquare square : squares) {
+        for(Square square : squares) {
             if(square.hasPiece) {
                 continue;
             }
             if(square.y == 0) {
-                addPawn(square, new Bead("white", square.x, square.y, 50));
+                addPawn(square, new Pawn(Color.BLACK, square.x, square.y, 30));
             }
             if(square.y == size - 1) {
-                addPawn(square, new Bead("black", square.x, square.y, 50));
+                addPawn(square, new Pawn(Color.WHITE, square.x, square.y, 30));
             }
         }
     }
