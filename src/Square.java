@@ -3,6 +3,7 @@ import javafx.scene.layout.StackPane;
 public class Square extends StackPane {
    int x, y;
    boolean hasPiece;
+   char pieceType;
    String name;
 
    public Square(int x, int y) {
@@ -34,5 +35,13 @@ public class Square extends StackPane {
 
    public int getYPos() {
       return this.y;
+   }
+
+   public void setPiece(char piece) {
+      this.pieceType = piece;
+   }
+
+   public char getPiece() {
+      return this.pieceType;
    }
 }

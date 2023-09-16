@@ -12,7 +12,7 @@ public class Game {
 
      public void slowMode() {
        User player = new User("Player 1", "white");
-       User cpu = new Robot("CPU");
+       User cpu = new Robot("CPU", "black");
 
        String currPlayer = player.toString();
 

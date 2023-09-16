@@ -6,6 +6,7 @@ public class Board {
     public final GridPane board;
     public ArrayList<Square> squares = new ArrayList<>();
     private final int size = 3;
+    private final char[][] initState = BoardStates.init();
 
 
     public Board(GridPane board) {
@@ -19,12 +20,12 @@ public class Board {
             for(int j = 0; j < size; j++) {
                 Square square = new Square(i,j);
                 square.setName("Position" + i + j);
+                square.setPiece(initState[i][j]);
                 square.setPrefHeight(100);
                 square.setPrefWidth(100);
-
                 square.setBorder(new Border(new BorderStroke(Color.BLACK,
                     BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-                board.add(square,i,j,1,1);
+                board.add(square,j,i,1,1);
                 squares.add(square);
             }
         }
@@ -41,10 +42,10 @@ public class Board {
             if(square.hasPiece) {
                 continue;
             }
-            if(square.y == 0) {
+            if(square.getPiece() == 'B') {
                 addPawn(square, new Pawn(Color.BLACK, square.x, square.y, 30));
             }
-            if(square.y == size - 1) {
+            if(square.getPiece() == 'W') {
                 addPawn(square, new Pawn(Color.WHITE, square.x, square.y, 30));
             }
         }

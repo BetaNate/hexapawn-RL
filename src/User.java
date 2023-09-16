@@ -14,7 +14,7 @@ public class User {
     public final String getSide() {
         return side;
     }
-    
+
 	@Override
 	public String toString() {
 		return name + side;
