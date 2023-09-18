@@ -36,22 +36,23 @@ public class Pawn extends Circle{
         return this.posY;
      }
 
-     public void addEventHandler(){
-        this.setOnMouseClicked(new EventHandler<MouseEvent>() {
+     public EventHandler<MouseEvent> addHandler(){
+         EventHandler<MouseEvent> pawnClicked = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println("Pawn CLicked");
                 if(!moves.isEmpty()) {
-                    for(Square move : moves) {
-                    move.setStyle("-fx-background-color: white;");
-                    } 
                     moves.clear();
                 }
                 getMoves(Game.board, Game.board.getSquare(posX, posY));
                 renderMoves();
                 Game.movePawn(moves, Game.board.getSquare(posX, posY));
             }
-        });
+        };
+        return pawnClicked;
+    }
+
+    public void removeHandler() {
+        this.removeEventHandler(MouseEvent.MOUSE_CLICKED,addHandler());
     }
 
 
@@ -75,7 +76,9 @@ public class Pawn extends Circle{
             Square leftDiagonal = board.getSquares().get(leftDiagIndex);
             // Check if leftDiagonalSquare is in different row
             if ((Math.abs(leftDiagonal.getYPos() - square.getYPos())) == 1 && leftDiagonal.hasPiece) {
-                moves.add(leftDiagonal);
+                if(leftDiagonal.getPiece() != square.getPiece()) {
+                    moves.add(leftDiagonal);
+                }
             }
         }
 
@@ -83,7 +86,9 @@ public class Pawn extends Circle{
             Square rightDiagonal = board.getSquares().get(rightDiagIndex);
             // Check if leftDiagonalSquare is not null
             if ((Math.abs(rightDiagonal.getYPos() - square.getYPos())) == 1 && rightDiagonal.hasPiece) {
-                moves.add(rightDiagonal);
+                if(rightDiagonal.getPiece() != square.getPiece()){
+                    moves.add(rightDiagonal);
+                }
             }
         }
 
@@ -104,5 +109,4 @@ public class Pawn extends Circle{
         }
      }
 
-     
 }

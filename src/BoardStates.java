@@ -1,12 +1,29 @@
-import java.util.Set;
+import java.util.ArrayList;
 
 public class BoardStates {
 
-    private Set<char[][]> possibleStates; 
+    private ArrayList<char[][]> possibleStates; 
 
     public BoardStates() {
+      possibleStates = new ArrayList<char[][]>();
+      setStates();
+    } 
 
-        //Turn 2
+    public static char[][] init() {
+        return new char[][] { 
+            {'B','B','B'},
+            {'E','E','E'},
+            {'W','W','W'}};
+    }
+    
+    private void setStates() {
+      //Turn 0
+         possibleStates.add(new char[][] {
+            {'B','B','B'},
+            {'E','E','E'},
+            {'W','W','W'}}
+         );
+    //Turn 2
         possibleStates.add(new char[][] {
             {'B','B','B'},
             {'W','E','E'},
@@ -139,13 +156,8 @@ public class BoardStates {
             {'E','W','B'},
             {'E','E','E'}}
          );
-    } 
-
-    public static char[][] init() {
-        return new char[][] { 
-            {'B','B','B'},
-            {'E','E','E'},
-            {'W','W','W'}};
     }
- 
+    public ArrayList<char[][]> getStates() {
+         return possibleStates;
+    }
 }

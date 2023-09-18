@@ -3,9 +3,9 @@ import javafx.scene.shape.Line;
 
 public class Bead {
     private Color color;
-    private String move;
+    private Square move;
 
-    public Bead(Color color, String move) {
+    public Bead(Color color, Square move) {
         this.color = color;
         this.move = move;
     }
@@ -18,19 +18,16 @@ public class Bead {
         this.color = color;
     }
 
-    public String getMoveType() {
+    public Square getMoveType() {
         return this.move;
     }
 
-    public void setMoveType(String moveType) {
+    public void setMoveType(Square moveType) {
         this.move = moveType;
     }
 
-    public Line renderBead(Pawn start, Square end) {
-        Line beadLine = new Line(start.getXPos(), start.getYPos(), end.getXPos(), end.getYPos());
-        beadLine.setStroke(this.color);
-
-        return beadLine;
+    public void renderBead(Square move) {
+        move.setStyle("-fx-background-color:" + this.color.toString() + ";");
     }
 
 

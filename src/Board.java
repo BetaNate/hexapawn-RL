@@ -6,21 +6,22 @@ public class Board extends GridPane{
     private final GridPane board;
     private final ArrayList<Square> squares = new ArrayList<>();
     private final int size = 3;
-    private final char[][] initState = BoardStates.init();
+    private final char[][] state;
 
 
-    public Board(GridPane board) {
+    public Board(GridPane board, char[][] state) {
         this.board = board;
-        generateBox(this.board);
+        this.state = state;
+        generateBox(this.board, this.state);
     }
 
-    private void generateBox(GridPane board) {
+    private void generateBox(GridPane board, char[][] state) {
 
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
                 Square square = new Square(i,j);
                 square.setName("Position" + i + j);
-                square.setPiece(initState[i][j]);
+                square.setPiece(state[i][j]);
                 square.setPrefHeight(100);
                 square.setPrefWidth(100);
                 square.setBorder(new Border(new BorderStroke(Color.BLACK,
@@ -46,6 +47,7 @@ public class Board extends GridPane{
     public Pawn removePawn(Square square) {
         Pawn pawn = (Pawn)square.getChildren().get(0);
         square.getChildren().remove(0);
+        square.hasPiece = false;
         square.setPiece('E');
         
         return pawn;

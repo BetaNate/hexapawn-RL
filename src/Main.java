@@ -20,13 +20,11 @@ public class Main extends Application{
         root.setMinWidth(size);
         root.setMinHeight(size);
         root.setAlignment(Pos.BASELINE_CENTER);
-        Game game = new Game(root);
+        Game game = new Game(root, "slow");
         
         Scene scene = new Scene(root, size, size);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
-
-        game.slowMode();
     }
 }
