@@ -44,4 +44,5 @@ public class Square extends StackPane {
    public char getPiece() {
       return this.pieceType;
    }
+
 }

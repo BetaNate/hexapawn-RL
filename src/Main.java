@@ -14,17 +14,19 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("HER - Hexapawn Educable Robot");
-        double size = 800;
+        double size = 500;
 
         GridPane root = new GridPane();
         root.setMinWidth(size);
         root.setMinHeight(size);
         root.setAlignment(Pos.BASELINE_CENTER);
-        Board board = new Board(root);
+        Game game = new Game(root);
         
         Scene scene = new Scene(root, size, size);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        game.slowMode();
     }
 }

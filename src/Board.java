@@ -2,9 +2,9 @@ import javafx.scene.layout.*;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 
-public class Board {
-    public final GridPane board;
-    public ArrayList<Square> squares = new ArrayList<>();
+public class Board extends GridPane{
+    private final GridPane board;
+    private final ArrayList<Square> squares = new ArrayList<>();
     private final int size = 3;
     private final char[][] initState = BoardStates.init();
 
@@ -32,10 +32,24 @@ public class Board {
         addPawns();
     }
  
-    private void addPawn(Square square, Pawn pawn) {
+    public void addPawn(Square square, Pawn pawn) {
         square.getChildren().add(pawn);
         square.hasPiece = true;
+        if(pawn.getColor() == Color.WHITE) {
+            square.setPiece('W');
+        }
+        else{
+            square.setPiece('B');
+        }
     }
+
+    public Pawn removePawn(Square square) {
+        Pawn pawn = (Pawn)square.getChildren().get(0);
+        square.getChildren().remove(0);
+        square.setPiece('E');
+        
+        return pawn;
+      }
 
     private void addPawns() {
         for(Square square : squares) {
@@ -49,5 +63,19 @@ public class Board {
                 addPawn(square, new Pawn(Color.WHITE, square.x, square.y, 30));
             }
         }
+    }
+
+    public Square getSquare(int x, int y) {
+        for (Square square : squares) {
+            if(board.getRowIndex(square) == x && board.getColumnIndex(square) == y) {
+                return square;
+            }
+        }
+    
+        return null;
+    }
+
+    public ArrayList<Square> getSquares() {
+       return squares;
     }
 }
