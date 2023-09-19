@@ -13,7 +13,7 @@ public class Game {
     public static Board board;
     private boolean game;
     private static String mode;
-    private User currPlayer;
+    private static User currPlayer;
     private static User player1;
     private static User player2;
     private final char[][] start = new char[][] {
@@ -49,7 +49,7 @@ public class Game {
        player2 = new Robot("cpu", "black");
 
        currPlayer = player1;
-       playTurn(board, currPlayer.toString());
+       playTurn(board, currPlayer);
     }
      
 
@@ -58,7 +58,7 @@ public class Game {
         player2 = new Robot("cpu", "black");
 
         currPlayer = player1;
-        playTurn(board, currPlayer.toString());
+        playTurn(board, currPlayer);
      }
 
      public void Auto() {
@@ -66,7 +66,7 @@ public class Game {
         player2 = new Robot("cpu", "black");
 
         currPlayer = player1;
-        playTurn(board, currPlayer.toString());
+        playTurn(board, currPlayer);
      }
 
 /*
@@ -76,19 +76,19 @@ public class Game {
  */
      //Cycle turns
      //To cycle a turn, the method is called recursively, swapping the currPlayer String.
-     private static void playTurn(Board board, String currPlayer){
-      if(currPlayer == "player") {
+     private static void playTurn(Board board, User currPlayer){
+      if(currPlayer.toString() == "player") {
         for(Square square : board.getSquares()) {
           if(square.hasPiece) {
             Pawn pawn = (Pawn) square.getChildren().get(0);
-            if(pawn.getColor() == Color.WHITE) { //User should always be white
+            if(pawn.getColor() == currPlayer.getColor()) { //User should always be white
               pawn.addEventHandler(MouseEvent.MOUSE_CLICKED, pawn.addHandler()); //Make user's pawns clickable
               pawn.removeHandler();
             }
           }
         }
       }
-       if(currPlayer == "cpu") {
+       if(currPlayer.toString() == "cpu") {
           randomMove(board, (Robot)player2);
         }
      }
@@ -100,7 +100,7 @@ public class Game {
           Square square = (Square) event.getTarget();
           if(square.hasPiece && square.getPiece() != 'W') {
             Pawn pawn = board.removePawn(square);
-            if(pawn.getColor() == Color.WHITE) {
+            if(currPlayer.getColor() == Color.WHITE) {
               board.addPawn(square, new Pawn(Color.BLACK,square.getXPos(),square.getYPos(),30));
             }
             else{
@@ -108,7 +108,7 @@ public class Game {
             }
           }
           else{
-            board.addPawn(square, new Pawn(Color.WHITE, square.getXPos(),square.getYPos(),30));
+            board.addPawn(square, new Pawn(currPlayer.getColor(), square.getXPos(),square.getYPos(),30));
           }
   
          square.setStyle("-fx-background-color: white;");
@@ -123,8 +123,8 @@ public class Game {
         }
          square.removeEventHandler(MouseEvent.MOUSE_CLICKED, this); // at the bottom
 
-     
-         playTurn(board, "cpu");
+         currPlayer = player2;
+         playTurn(board, currPlayer);
       }
     };
 
@@ -143,7 +143,7 @@ public class Game {
         Square origin = board.getSquare(bead.getOrigin().getXPos(), bead.getOrigin().getYPos());
         if(move.hasPiece && move.getPiece() != origin.getPiece()) {
             Pawn pawn = board.removePawn(move);
-            if(pawn.getColor() == Color.BLACK) {
+            if(currPlayer.getColor() == Color.BLACK) {
               board.addPawn(move, new Pawn(Color.WHITE,move.getXPos(),move.getYPos(),30));
             }
             else {
@@ -151,10 +151,11 @@ public class Game {
             }
         }
         else{
-            board.addPawn(move, new Pawn(Color.BLACK,move.getXPos(),move.getYPos(),30));
+            board.addPawn(move, new Pawn(currPlayer.getColor(), move.getXPos(),move.getYPos(),30));
           }
         board.removePawn(origin);
-        playTurn(board, "player");
+        currPlayer = player2;
+        playTurn(board, currPlayer);
       }
 
 
