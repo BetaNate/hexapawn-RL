@@ -9,35 +9,36 @@ Input: name (should always be set to "cpu" in Game.java)
 side: side that the cpu is playing
 */
 public class Robot extends User{
-    private Matchbox[] matchboxes;
-	private BoardStates boardstates = new BoardStates();
+    private ArrayList<Matchbox> matchboxes;
+	private ArrayList<char[][]> boardstates = new ArrayList<char[][]>();
 	private final String side;
-	private Board[] boards;
+	private ArrayList<Board> boards;
 
 	public Robot(String name, String side) {
 		super(name, side);
 		this.side = side;
-		boards = new Board[boardstates.getStates().size()];
-		matchboxes = new Matchbox[boardstates.getStates().size()];
-		setMatchboxes(boardstates.getStates());
+		boards = new ArrayList<Board>();
+		matchboxes = new ArrayList<Matchbox>();
 	}
 
-	//Create instances of board for each boardstate
-	private void setMatchboxes(ArrayList<char[][]> states) {
-		for(int i = 0; i < states.size(); i++) {
-			Board boardState = new Board(new GridPane(), states.get(i));
-			boards[i] = boardState;
-			matchboxes[i] = (new Matchbox(boardState, this.side));
+	public void addMatchbox(char[][] state) {
+		Board boardState = new Board(new GridPane(), state);
+		boards.add(boardState);
+		matchboxes.add(new Matchbox(boardState, this.side));
+	}
 
-			//System.out.println(Arrays.deepToString(states.get(i)));
-			//System.out.println(Arrays.deepToString(boardState.getPieces()));
+	public ArrayList<char[][]> getBoards() {
+		if(boards.isEmpty()) {
+			return null;
 		}
-	}
 
-	public Board[] getBoards() {
-        return boards;
+        for(Board board: boards) {
+			boardstates.add(board.getPieces());
+		}
+
+		return boardstates;
     }
-	public Matchbox[] getMatchboxes() {
+	public ArrayList<Matchbox> getMatchboxes() {
 		return matchboxes;
 	}
 }

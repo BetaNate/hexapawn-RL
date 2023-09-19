@@ -16,9 +16,14 @@ public class Game {
     private User currPlayer;
     private static User player1;
     private static User player2;
+    private final char[][] start = new char[][] {
+      {'B','B','B'},
+      {'E','E','E'},
+      {'W','W','W'}
+    };
 
      public Game(GridPane hexaPane, String mode) {
-        board = new Board(hexaPane, BoardStates.init());
+        board = new Board(hexaPane, start);
         this.game = true;
         this.mode = mode;
         
@@ -78,7 +83,7 @@ public class Game {
             Pawn pawn = (Pawn) square.getChildren().get(0);
             if(pawn.getColor() == Color.WHITE) { //User should always be white
               pawn.addEventHandler(MouseEvent.MOUSE_CLICKED, pawn.addHandler()); //Make user's pawns clickable
-              //pawn.removeHandler();
+              pawn.removeHandler();
             }
           }
         }
@@ -134,8 +139,8 @@ public class Game {
     //Make a move based on a selected bead
     //BROKEN: NOT MOVING PAWNS PROPERLY
     public static void movePawnAuto(Bead bead) {
-        Square move = bead.getMove();
-        Square origin = bead.getOrigin();
+        Square move = board.getSquare(bead.getMove().getXPos(), bead.getMove().getYPos());
+        Square origin = board.getSquare(bead.getOrigin().getXPos(), bead.getOrigin().getYPos());
         if(move.hasPiece && move.getPiece() != origin.getPiece()) {
             Pawn pawn = board.removePawn(move);
             if(pawn.getColor() == Color.BLACK) {
@@ -160,25 +165,30 @@ public class Game {
     for these missing boardstates
     */
     private static void randomMove(Board board, Robot cpu) {
-      //Board[] boards = cpu.getBoards();
-      Matchbox[] matchboxes = cpu.getMatchboxes();
-      for(int i = 0; i < matchboxes.length; i++) {
-        if(Arrays.deepEquals(board.getPieces(), matchboxes[i].getBoard())) {
-          if (matchboxes[i].isEmpty()) {
+      if(cpu.getBoards() == null) {
+        cpu.addMatchbox(board.getPieces());
+      }
+      else if(!cpu.getBoards().contains(board.getPieces())) {
+        cpu.addMatchbox(board.getPieces());
+      }
+      ArrayList<Matchbox> matchboxes = cpu.getMatchboxes();
+      for(Matchbox matchbox : matchboxes) {
+        if(Arrays.deepEquals(board.getPieces(), matchbox.getBoard())) {
+          if (matchbox.isEmpty()) {
             //Make function for win conditions
           }
           else {
-            List<Bead> beads = matchboxes[i].getBeads();
+            List<Bead> beads = matchbox.getBeads();
             System.out.println(beads.toString());
-           if(mode == "slow") {
-              matchboxes[i].renderBeads();//MOVES NOT RENDERING
-           }
+            if(mode == "slow") {
+              matchbox.renderBeads();//MOVES NOT RENDERING
+            }
             Bead chosenbead = beads.get(new Random().nextInt(beads.size()));
             movePawnAuto(chosenbead);
             break;
+            }
           }
-        }
-    /*    else {
+            /*    else {
           System.out.println("CANNOT RECOGNIZE BOARDSTATE");
           conthb n0;
 
