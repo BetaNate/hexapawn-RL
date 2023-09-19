@@ -1,20 +1,18 @@
 import java.util.ArrayList;
-import java.util.List;
 import javafx.scene.paint.Color;
 
 
 public class Matchbox {
-    private List<Bead> beads;
-    private final Board board;
+    private ArrayList<Bead> beads = new ArrayList<Bead>();
+    private Board board;
     private final String side;
-    private List<Square> moves;
+    private ArrayList<Square> moves = new ArrayList<Square>();
     private final Color[] moveColors = {
         Color.RED, Color.GREEN,
         Color.YELLOW, Color.BLUE
     };
 
     public Matchbox(Board board, String side) {
-        beads = new ArrayList<>();
         this.board = board;
         this.side = side;
         addBeads();
@@ -40,10 +38,12 @@ public class Matchbox {
                     moves = pawn.getMoves(board, square);
                 }
             }
-        }
-        if(!moves.isEmpty()) {
-            for(int i = 0; i < moves.size(); i++) {
-                addBead(new Bead(moveColors[i], moves.get(i)));
+
+            if(!moves.isEmpty()) {
+                for(int i = 0; i < moves.size(); i++) {
+                    addBead(new Bead(moveColors[i], square, moves.get(i)));
+                }
+                moves.clear();
             }
         }
         //else{
@@ -68,7 +68,16 @@ public class Matchbox {
     //Bead visualization
     public void renderBeads() {
         for(Bead bead : beads) {
-            bead.renderBead(bead.getMoveType());
+            System.out.println(bead.getMove().toString());
+            bead.renderBead(bead.getMove());
         }
+    }
+
+    public char[][] getBoard() {
+        return this.board.getPieces();
+    }
+
+    public ArrayList<Bead> getBeads() {
+        return this.beads;
     }
 }

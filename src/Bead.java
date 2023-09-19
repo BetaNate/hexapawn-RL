@@ -1,12 +1,13 @@
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 
 public class Bead {
     private Color color;
     private Square move;
+    private Square origin;
 
-    public Bead(Color color, Square move) {
+    public Bead(Color color, Square origin, Square move) {
         this.color = color;
+        this.origin = origin;
         this.move = move;
     }
 
@@ -18,16 +19,20 @@ public class Bead {
         this.color = color;
     }
 
-    public Square getMoveType() {
+    public Square getMove() {
         return this.move;
     }
 
-    public void setMoveType(Square moveType) {
+    public Square getOrigin() {
+        return this.origin;
+    }
+
+    public void setMove(Square moveType) {
         this.move = moveType;
     }
 
     public void renderBead(Square move) {
-        move.setStyle("-fx-background-color:" + this.color.toString() + ";");
+        move.setStyle("-fx-background-color: silver;");
     }
 
 

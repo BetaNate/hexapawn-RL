@@ -67,6 +67,16 @@ public class Board extends GridPane{
         }
     }
 
+    public char[][] getPieces() {
+        char[][] pieces = new char[size][size];
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                pieces[i][j] = getSquare(i, j).getPiece();
+            }
+        }
+        return pieces;
+    }
+    
     public Square getSquare(int x, int y) {
         for (Square square : squares) {
             if(board.getRowIndex(square) == x && board.getColumnIndex(square) == y) {

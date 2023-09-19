@@ -24,7 +24,7 @@ public class BoardStates {
             {'W','W','W'}}
          );
     //Turn 2
-        possibleStates.add(new char[][] {
+         possibleStates.add(new char[][] {
             {'B','B','B'},
             {'W','E','E'},
             {'E','W','W'}}
@@ -32,7 +32,7 @@ public class BoardStates {
          possibleStates.add(new char[][] {
             {'B','B','B'},
             {'E','E','W'},
-            {'E','W','W'}}
+            {'W','W','E'}}
          );
          possibleStates.add(new char[][] {
             {'B','B','B'},

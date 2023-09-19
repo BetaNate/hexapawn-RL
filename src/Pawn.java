@@ -13,7 +13,7 @@ public class Pawn extends Circle{
     private final Color color;
     private int posX, posY;
     private int forwardIndex, leftDiagIndex, rightDiagIndex;
-    private List<Square> moves = new ArrayList<Square>();;
+    private ArrayList<Square> moves = new ArrayList<Square>();;
 
     public Pawn(Color color, int posX, int posY, int radius) {
         super(radius);
@@ -45,7 +45,7 @@ public class Pawn extends Circle{
                 }
                 getMoves(Game.board, Game.board.getSquare(posX, posY));
                 renderMoves();
-                Game.movePawn(moves, Game.board.getSquare(posX, posY));
+                Game.movePawnUser(moves, Game.board.getSquare(posX, posY));
             }
         };
         return pawnClicked;
@@ -58,7 +58,7 @@ public class Pawn extends Circle{
 
 
      //Get available moves for the pawn
-     public List<Square> getMoves(Board board, Square square) {
+     public ArrayList<Square> getMoves(Board board, Square square) {
 
         if(color == Color.WHITE) {
             leftDiagIndex = (board.getSquares().indexOf(square) - 4);
