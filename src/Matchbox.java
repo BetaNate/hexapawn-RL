@@ -27,13 +27,13 @@ public class Matchbox {
          for(Square square : this.board.getSquares()) {
             //Determine which player gets matchboxes
             if(this.side == "white") {
-                if(square.getPiece() == 'W') {
+                if(square.getPieceType() == 'W') {
                     Pawn pawn = (Pawn) square.getChildren().get(0);
                     moves = pawn.getMoves(board, square);
                 }
             }
             else {
-                if(square.getPiece() == 'B') {
+                if(square.getPieceType() == 'B') {
                     Pawn pawn = (Pawn) square.getChildren().get(0);
                     moves = pawn.getMoves(board, square);
                 }

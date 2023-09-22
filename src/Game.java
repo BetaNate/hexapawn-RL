@@ -93,68 +93,62 @@ public class Game {
         }
      }
 
-    //Event handler to select a move
-    static EventHandler<MouseEvent> squareClicked=new EventHandler<MouseEvent>() {
+    static  EventHandler<MouseEvent> moveHandler(List<Square> moves, Square origin) {
+     EventHandler<MouseEvent> squareClicked=new EventHandler<MouseEvent>() {
+      Square square;
+      Pawn pawn;
+
       @Override
       public void handle(MouseEvent event) {
-          Square square = (Square) event.getTarget();
-          if(square.hasPiece && square.getPiece() != 'W') {
-            Pawn pawn = board.removePawn(square);
-            if(currPlayer.getColor() == Color.WHITE) {
-              board.addPawn(square, new Pawn(Color.BLACK,square.getXPos(),square.getYPos(),30));
-            }
-            else{
-              board.addPawn(square, new Pawn(Color.WHITE,square.getXPos(),square.getYPos(),30));
-            }
-          }
-          else{
-            board.addPawn(square, new Pawn(currPlayer.getColor(), square.getXPos(),square.getYPos(),30));
-          }
-  
-         square.setStyle("-fx-background-color: white;");
-
-        //Remove evnt handlers from pawns
-        //This does NOT effectively remove event handlers from all pawns
-         for(Square location : board.getSquares()) {
-          if(location.getPiece() == 'W') {
-            Pawn piece = (Pawn) location.getChildren().get(0);
-                piece.removeHandler();
-            }
+        EventTarget target = event.getTarget();
+        if(target.toString().contains("Circle")) {
+          pawn = (Pawn)target;
+          square = (Square)pawn.getParent();
+          board.removePawn(square);
+          board.addPawn(square, new Pawn(currPlayer.getColor(), square.getXPos(),square.getYPos(),30));
         }
-         square.removeEventHandler(MouseEvent.MOUSE_CLICKED, this); // at the bottom
-
-         currPlayer = player2;
-         playTurn(board, currPlayer);
+        else {
+          square = (Square) event.getTarget();
+          if(square.hasPiece && square.getPawn().getColor() != currPlayer.getColor()) {
+            board.removePawn(square);
+          }
+        }
+        board.addPawn(square, new Pawn(currPlayer.getColor(), square.getXPos(),square.getYPos(),30));
+  
+        board.removePawn(origin);
+        disableMoves(moves);
+        currPlayer = player2;
+        playTurn(board, currPlayer);
       }
     };
+    return squareClicked;
+  }
 
     //Add event listeners for user's pawns
     public static void movePawnUser(List<Square> possibleMoves, Square square) {
         for(Square move:possibleMoves) {
-         move.addEventHandler(MouseEvent.MOUSE_CLICKED, squareClicked);
+         move.addEventHandler(MouseEvent.MOUSE_CLICKED, moveHandler(possibleMoves, square));
         }
-        board.removePawn(square);
+       // board.removePawn(square);
     }
 
+    public static void disableMoves(List<Square> possibleMoves) {
+      for(Square move:possibleMoves) {
+        move.removeEventHandler(MouseEvent.MOUSE_CLICKED, moveHandler(possibleMoves, move));
+        move.setStyle("-fx-background-color: white;");
+      }
+    }
     //Make a move based on a selected bead
     //BROKEN: NOT MOVING PAWNS PROPERLY
     public static void movePawnAuto(Bead bead) {
         Square move = board.getSquare(bead.getMove().getXPos(), bead.getMove().getYPos());
         Square origin = board.getSquare(bead.getOrigin().getXPos(), bead.getOrigin().getYPos());
-        if(move.hasPiece && move.getPiece() != origin.getPiece()) {
+        if(move.hasPiece && move.getPieceType() != origin.getPieceType()) {
             Pawn pawn = board.removePawn(move);
-            if(currPlayer.getColor() == Color.BLACK) {
-              board.addPawn(move, new Pawn(Color.WHITE,move.getXPos(),move.getYPos(),30));
-            }
-            else {
-              board.addPawn(move, new Pawn(Color.BLACK,move.getXPos(),move.getYPos(),30));
-            }
         }
-        else{
-            board.addPawn(move, new Pawn(currPlayer.getColor(), move.getXPos(),move.getYPos(),30));
-          }
+        board.addPawn(move, new Pawn(currPlayer.getColor(), move.getXPos(),move.getYPos(),30));
         board.removePawn(origin);
-        currPlayer = player2;
+        currPlayer = player1;
         playTurn(board, currPlayer);
       }
 

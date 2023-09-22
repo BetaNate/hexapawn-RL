@@ -45,11 +45,13 @@ public class Board extends GridPane{
     }
 
     public Pawn removePawn(Square square) {
+        if(!square.hasPiece) {
+            return null;
+        }
         Pawn pawn = (Pawn)square.getChildren().get(0);
         square.getChildren().remove(0);
         square.hasPiece = false;
         square.setPiece('E');
-        
         return pawn;
       }
 
@@ -58,10 +60,10 @@ public class Board extends GridPane{
             if(square.hasPiece) {
                 continue;
             }
-            if(square.getPiece() == 'B') {
+            if(square.getPieceType() == 'B') {
                 addPawn(square, new Pawn(Color.BLACK, square.x, square.y, 30));
             }
-            if(square.getPiece() == 'W') {
+            if(square.getPieceType() == 'W') {
                 addPawn(square, new Pawn(Color.WHITE, square.x, square.y, 30));
             }
         }
@@ -71,7 +73,7 @@ public class Board extends GridPane{
         char[][] pieces = new char[size][size];
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
-                pieces[i][j] = getSquare(i, j).getPiece();
+                pieces[i][j] = getSquare(i, j).getPieceType();
             }
         }
         return pieces;

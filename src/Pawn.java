@@ -4,6 +4,7 @@ import javafx.scene.shape.Circle;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,7 @@ public class Pawn extends Circle{
                 getMoves(Game.board, Game.board.getSquare(posX, posY));
                 renderMoves();
                 Game.movePawnUser(moves, Game.board.getSquare(posX, posY));
+                addEventHandler(MouseEvent.MOUSE_CLICKED, deselect());
             }
         };
         return pawnClicked;
@@ -55,7 +57,22 @@ public class Pawn extends Circle{
         this.removeEventHandler(MouseEvent.MOUSE_CLICKED,addHandler());
     }
 
-
+    //Deselects pawn
+    public EventHandler<MouseEvent> deselect() {
+        EventHandler<MouseEvent> deselect = new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton() == MouseButton.SECONDARY) {
+                    if(!moves.isEmpty()) {
+                        Game.disableMoves(moves);
+                        moves.clear();
+                    }
+                    removeEventHandler(MouseEvent.MOUSE_CLICKED, this);
+                }
+            }
+        };
+      return deselect;
+    }
 
      //Get available moves for the pawn
      public ArrayList<Square> getMoves(Board board, Square square) {
@@ -76,7 +93,7 @@ public class Pawn extends Circle{
             Square leftDiagonal = board.getSquares().get(leftDiagIndex);
             // Check if leftDiagonalSquare is in different row
             if ((Math.abs(leftDiagonal.getYPos() - square.getYPos())) == 1 && leftDiagonal.hasPiece) {
-                if(leftDiagonal.getPiece() != square.getPiece()) {
+                if(leftDiagonal.getPieceType() != square.getPieceType()) {
                     moves.add(leftDiagonal);
                 }
             }
@@ -86,7 +103,7 @@ public class Pawn extends Circle{
             Square rightDiagonal = board.getSquares().get(rightDiagIndex);
             // Check if leftDiagonalSquare is not null
             if ((Math.abs(rightDiagonal.getYPos() - square.getYPos())) == 1 && rightDiagonal.hasPiece) {
-                if(rightDiagonal.getPiece() != square.getPiece()){
+                if(rightDiagonal.getPieceType() != square.getPieceType()){
                     moves.add(rightDiagonal);
                 }
             }
