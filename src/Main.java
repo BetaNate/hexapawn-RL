@@ -8,8 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -23,6 +25,7 @@ public class Main extends Application{
     private final String[] modes = {"Slow", "Fast", "Auto"};
     private Game game;
     private Scene gameScene;
+    public static StackPane overlap;
 
     public static void main(String[] args) throws Exception {
        launch(args);
@@ -30,13 +33,14 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+         overlap = new StackPane();
+         VBox root = new VBox();
 /*
 * -----------------
 *      MENU
 * -----------------
 */
         primaryStage.setTitle("HER - Hexapawn Educable Robot");
-        VBox root = new VBox();
         Text title = new Text("H.E.R - Hexapawn Educable Robot");
         title.setFont(Font.font(STYLESHEET_CASPIAN, FontWeight.BOLD, null, 20));
         Text description = new Text("Select a mode to start!");
@@ -52,13 +56,28 @@ public class Main extends Application{
         root.getChildren().addAll(title, description, modeLabel, modeSelect, start);
         root.setMargin(start, new Insets(10, 10, 10, 10));
         root.setMargin(description, new Insets(10, 10, 20, 10));
+
+/*
+ *---------------------
+ *    GAME DISPLAY
+ *---------------------
+ */
         
         GridPane gamePane = new GridPane();
-        gamePane.setMinWidth(size);
-        gamePane.setMinHeight(size);
+        HBox moves = new HBox();
+        moves.setAlignment(Pos.CENTER);
+        gamePane.setMinWidth(size/2);
+        gamePane.setMinHeight(size/2);
         gamePane.setAlignment(Pos.BASELINE_CENTER);
 
-        //Button event handler
+        Text clickPawn = new Text("Select Pawn: Left-Click");
+        Text unclickPawn = new Text("Deselect Pawn: Right-Click");
+        Text movePawn = new Text("Move Pawn: Click an available button (only after selecting a pawn)");
+        Button reset = new Button("RESET");
+        root.setMargin(clickPawn, new Insets(10, 10, 10, 10));
+        root.setMargin(movePawn, new Insets(10, 10, 10, 10));
+
+        //Menu event handler
         start.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
@@ -71,11 +90,24 @@ public class Main extends Application{
                 else {
                     game = new Game(gamePane, "fast"); //Start fast mode
                 }
+                root.getChildren().clear();
                 gameScene = new Scene(gamePane, size, size);
-                primaryStage.setScene(gameScene); //Display game
+                moves.getChildren().addAll(game.left, game.forward, game.right);
+                overlap.getChildren().add(gamePane);
+                root.getChildren().addAll(overlap, clickPawn, unclickPawn, movePawn, moves, reset);
+                //primaryStage.setScene(overlap); //Display game
             }
         });
         
+        //Handler for reset button
+        //Resets game with game's reset() function
+        reset.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                game.reset();
+            }
+        });
+
         Scene scene = new Scene(root, size, size);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);

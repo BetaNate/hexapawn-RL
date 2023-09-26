@@ -4,7 +4,6 @@ import javafx.scene.shape.Circle;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.ActionEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import java.util.ArrayList;
@@ -15,8 +14,7 @@ public class Pawn extends Circle{
     private final Color color;
     private int posX, posY;
     private int forwardIndex, leftDiagIndex, rightDiagIndex;
-    private ArrayList<Square> moves = new ArrayList<Square>();
-    private List<Move> availableMoves = new ArrayList<Move>();
+    private ArrayList<Square> moves = new ArrayList<Square>();;
 
     public Pawn(Color color, int posX, int posY, int radius) {
         super(radius);
@@ -31,15 +29,7 @@ public class Pawn extends Circle{
         return this.color;
     }
 
-    public void setXPos(int posX) {
-        this.posX = posX;
-     }
-  
-     public void setYPos(int posY) {
-        this.posY = posY;
-     }
-
-     public int getXPos() {
+    public int getXPos() {
         return this.posX;
      }
   
@@ -53,13 +43,11 @@ public class Pawn extends Circle{
             public void handle(MouseEvent event) {
                 if(!moves.isEmpty()) {
                     moves.clear();
-                    availableMoves.clear();
                 }
                 getMoves(Game.board, Game.board.getSquare(posX, posY));
                 renderMoves();
-                Game.movePawnUserButtons(availableMoves, Game.board.getSquare(posX, posY));
+                Game.movePawnUser(moves, Game.board.getSquare(posX, posY));
                 addEventHandler(MouseEvent.MOUSE_CLICKED, deselect());
-                event.consume();
             }
         };
         return pawnClicked;
@@ -81,16 +69,6 @@ public class Pawn extends Circle{
             }
         };
       return deselect;
-    }
-
-
-    //Create enum for available moves with FORWARD, LEFTDIAG, RIGHTDIAG
-    //if forwardIndex is empty, add FORWARD to moves
-    //if leftDiagIndex is not empty, add LEFTDIAG to moves
-    //if rightDiagIndex is not empty, add RIGHTDIAG to moves
-    //return moves
-    public enum Move {
-        FORWARD, LEFTDIAG, RIGHTDIAG;
     }
 
      //Get available moves for the pawn
@@ -115,17 +93,16 @@ public class Pawn extends Circle{
             if ((Math.abs(leftDiagonal.getYPos() - square.getYPos())) == 1 && leftDiagonal.hasPiece) {
                 if(leftDiagonal.getPieceType() != square.getPieceType()) {
                     moves.add(leftDiagonal);
-                    availableMoves.add(Move.LEFTDIAG);
                 }
             }
         }
+
         if (rightDiagIndex >= 0 && rightDiagIndex < board.getSquares().size()) {
             Square rightDiagonal = board.getSquares().get(rightDiagIndex);
             // Check if leftDiagonalSquare is not null
             if ((Math.abs(rightDiagonal.getYPos() - square.getYPos())) == 1 && rightDiagonal.hasPiece) {
                 if(rightDiagonal.getPieceType() != square.getPieceType()){
                     moves.add(rightDiagonal);
-                    availableMoves.add(Move.RIGHTDIAG);
                 }
             }
         }
@@ -135,15 +112,10 @@ public class Pawn extends Circle{
             // Check if leftDiagonalSquare is not null
             if (!forward.hasPiece) {
                 moves.add(forward);
-                availableMoves.add(Move.FORWARD);
             }
         }
         return moves;
      }
-
-      public List<Pawn.Move> availableMoves() {
-            return availableMoves;
-        }
 
      //Display available moves
      public void renderMoves() {

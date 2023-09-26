@@ -1,12 +1,17 @@
 import java.util.ArrayList;
+
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 
 public class Matchbox {
     private ArrayList<Bead> beads = new ArrayList<Bead>();
     private Board board;
+    private Bead chosenBead;
     private final String side;
     private ArrayList<Square> moves = new ArrayList<Square>();
+    private ArrayList<Line> lines = new ArrayList<Line>();
     private final Color[] moveColors = {
         Color.RED, Color.GREEN,
         Color.YELLOW, Color.BLUE
@@ -46,9 +51,6 @@ public class Matchbox {
                 moves.clear();
             }
         }
-        //else{
-          //  System.out.println("No moves exist!");
-        //}
     }
 
     //Bead Removal
@@ -66,11 +68,35 @@ public class Matchbox {
     }
 
     //Bead visualization
-    public void renderBeads() {
+    public void renderBeads(Board board) {
         for(Bead bead : beads) {
-            System.out.println(bead.getMove().toString());
-            bead.renderBead(bead.getMove());
+            bead.renderBead(board);
+            lines.add(bead.getLine());
         }
+
+        //Add event handlers to lines
+        //If line is clicked,move pawn
+        for(Line line : lines) {
+            line.setOnMouseClicked(e -> {
+                for(Bead bead : beads) {
+                    if(line == bead.getLine()) {
+                        chosenBead = bead;
+                        break;
+                    }
+                }
+                Game.movePawnAuto(chosenBead);
+
+            });
+        }
+        Button skip = new Button("Choose Random Bead");
+
+    }
+
+    public void unRenderBeads() {
+        for(Line line : lines) {
+            Main.overlap.getChildren().remove(line);
+        }
+        lines.clear();
     }
 
     public char[][] getBoard() {

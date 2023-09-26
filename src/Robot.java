@@ -41,4 +41,15 @@ public class Robot extends User{
 	public ArrayList<Matchbox> getMatchboxes() {
 		return matchboxes;
 	}
+
+	//Method to get the matchbox that contains the bead that was selected
+	//Call removeBead(chosenBead) on the matchbox that contains the bead that was selected
+	public Matchbox getMatchbox(Bead chosenBead) {
+		for(Matchbox matchbox : matchboxes) {
+			if(matchbox.getBeads().contains(chosenBead)) {
+				return matchbox;
+			}
+		}
+		return null;
+	}
 }

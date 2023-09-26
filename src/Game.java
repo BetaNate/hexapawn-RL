@@ -8,24 +8,37 @@ import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javafx.scene.control.Button;
+import javafx.event.ActionEvent;
 
 public class Game {
     public static Board board;
-    private boolean game;
+    private static boolean win;
     private static String mode;
     private static User currPlayer;
+    private static User winner;
     private static User player1;
     private static User player2;
-    private final char[][] start = new char[][] {
+    private static List<Square> moves = new ArrayList<Square>();
+    private static Bead chosenBead;
+    private final static char[][] start = new char[][] {
       {'B','B','B'},
       {'E','E','E'},
       {'W','W','W'}
     };
+     static Button forward = new Button("Forward");
+     static Button left = new Button("Left");
+     static Button right = new Button("Right");
+
+    static EventHandler<MouseEvent> clickHandler;
 
      public Game(GridPane hexaPane, String mode) {
         board = new Board(hexaPane, start);
-        this.game = true;
+        this.win = false;
         this.mode = mode;
+        forward.setDisable(true);
+        left.setDisable(true);
+        right.setDisable(true);
         
         //Choose mode depending on Menu input
         if(this.mode == "slow"){
@@ -88,77 +101,150 @@ public class Game {
           }
         }
       }
-       if(currPlayer.toString() == "cpu") {
+      if(currPlayer.toString() == "cpu") {
           randomMove(board, (Robot)player2);
-        }
+      }
      }
 
-    static  EventHandler<MouseEvent> moveHandler(List<Square> moves, Square origin) {
-     EventHandler<MouseEvent> squareClicked=new EventHandler<MouseEvent>() {
-      Square square;
-      Pawn pawn;
+/*
+ * --------------------------
+ *     MOVEMENT HANDLER
+ * --------------------------
+ */
 
-      @Override
-      public void handle(MouseEvent event) {
-        EventTarget target = event.getTarget();
-        if(target.toString().contains("Circle")) {
-          pawn = (Pawn)target;
-          square = (Square)pawn.getParent();
-          board.removePawn(square);
-          board.addPawn(square, new Pawn(currPlayer.getColor(), square.getXPos(),square.getYPos(),30));
+    //Creates buttons to move a selected pawn forward, left or right on user's turn
+    //Disables buttons after selected
+    //Similar to moveHandler, but does not use squares for event actions
+
+    public static void movePawnUserButtons(List<Pawn.Move> availableMoves, Square square) {
+      //Check which moves are available
+      //If move is available, enable button for it
+      //If move is not available, disable button for it
+      for(Pawn.Move move: availableMoves) {
+        if(move == Pawn.Move.FORWARD) {
+          forward.setDisable(false);
+        }
+        if(move == Pawn.Move.LEFTDIAG) {
+          left.setDisable(false);
+        }
+        if(move == Pawn.Move.RIGHTDIAG) {
+          right.setDisable(false);
+        }
+      }
+
+      forward.setOnAction(new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent e) {
+        Square move = board.getSquare(square.getXPos() - 1, square.getYPos());
+        System.out.println(move.toString());
+        Square origin = board.getSquare(square.getXPos(), square.getYPos());
+        if(move.hasPiece && move.getPieceType() != origin.getPieceType()) {
+          Pawn pawn = board.removePawn(move);
+        }
+        board.addPawn(move, new Pawn(currPlayer.getColor(), move.getXPos(),move.getYPos(),30));
+        board.removePawn(origin);
+        //Check winner before next turn
+        checkWin();
+        if(win) {
+          disableMoves();
+          return;
         }
         else {
-          square = (Square) event.getTarget();
-          if(square.hasPiece && square.getPawn().getColor() != currPlayer.getColor()) {
-            board.removePawn(square);
-          }
-        }
-        board.addPawn(square, new Pawn(currPlayer.getColor(), square.getXPos(),square.getYPos(),30));
-  
-        board.removePawn(origin);
-        disableMoves(moves);
+        disableMoves();
         currPlayer = player2;
         playTurn(board, currPlayer);
-      }
-    };
-    return squareClicked;
-  }
-
-    //Add event listeners for user's pawns
-    public static void movePawnUser(List<Square> possibleMoves, Square square) {
-        for(Square move:possibleMoves) {
-         move.addEventHandler(MouseEvent.MOUSE_CLICKED, moveHandler(possibleMoves, square));
         }
-       // board.removePawn(square);
+      }
+    });
+
+    left.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        Square move = board.getSquare(square.getXPos() - 1, square.getYPos() - 1);
+        Square origin = board.getSquare(square.getXPos(), square.getYPos());
+        if(move.hasPiece && move.getPieceType() != origin.getPieceType()) {
+          board.removePawn(move);
+        }
+        board.addPawn(move, new Pawn(currPlayer.getColor(), move.getXPos(),move.getYPos(),30));
+        board.removePawn(origin);
+        //Check winner before next turn
+        checkWin();
+        if(win) {
+          disableMoves();
+          return;
+        }
+        else {
+        disableMoves();
+        currPlayer = player2;
+        playTurn(board, currPlayer);
+        }
+      }
+    });
+
+    right.setOnAction(new EventHandler<ActionEvent>() {
+      @Override
+      public void handle(ActionEvent e) {
+        Square move = board.getSquare(square.getXPos() - 1, square.getYPos() + 1);
+        Square origin = board.getSquare(square.getXPos(), square.getYPos());
+        if(move.hasPiece && move.getPieceType() != origin.getPieceType()) {
+          board.removePawn(move);
+        }
+        board.addPawn(move, new Pawn(currPlayer.getColor(), move.getXPos(),move.getYPos(),30));
+        board.removePawn(origin);
+        //Check winner before next turn
+        checkWin();
+        if(win) {
+          disableMoves();
+          return;
+        }
+        else {
+        disableMoves();
+        currPlayer = player2;
+        playTurn(board, currPlayer);
+        }
+      }
+    });
     }
 
-    public static void disableMoves(List<Square> possibleMoves) {
-      for(Square move:possibleMoves) {
-        move.removeEventHandler(MouseEvent.MOUSE_CLICKED, moveHandler(possibleMoves, move));
-        move.setStyle("-fx-background-color: white;");
+
+    //Remove event handlers for user's pawns
+    //This is called after a move is made
+    //Will set the style for each square back to white
+    //Need an alternate option, disableMoves() is not working
+    public static void disableMoves() {
+      for(Square square : board.getSquares()) {
+        square.setStyle("-fx-background-color: white;");
       }
+      if(!moves.isEmpty()) {
+        moves.clear();
+      }
+      forward.setDisable(true);
+      left.setDisable(true);
+      right.setDisable(true);
     }
+
     //Make a move based on a selected bead
-    //BROKEN: NOT MOVING PAWNS PROPERLY
     public static void movePawnAuto(Bead bead) {
         Square move = board.getSquare(bead.getMove().getXPos(), bead.getMove().getYPos());
         Square origin = board.getSquare(bead.getOrigin().getXPos(), bead.getOrigin().getYPos());
         if(move.hasPiece && move.getPieceType() != origin.getPieceType()) {
-            Pawn pawn = board.removePawn(move);
+            board.removePawn(move);
         }
         board.addPawn(move, new Pawn(currPlayer.getColor(), move.getXPos(),move.getYPos(),30));
         board.removePawn(origin);
+        //Check winner before next turn
+        checkWin();
+        if(win) {
+          return;
+        }
+        else {
         currPlayer = player1;
         playTurn(board, currPlayer);
+        }
       }
 
 
     //Pick a move from a random bead from User's matchbox
-    /*
-    KNOWN BUG: For some reason not all board states are in the boards array, despite existing before
-    being stored (see Robot.java for implementation). Temporarily, the program is unable to make moves
-    for these missing boardstates
-    */
     private static void randomMove(Board board, Robot cpu) {
       if(cpu.getBoards() == null) {
         cpu.addMatchbox(board.getPieces());
@@ -170,29 +256,147 @@ public class Game {
       for(Matchbox matchbox : matchboxes) {
         if(Arrays.deepEquals(board.getPieces(), matchbox.getBoard())) {
           if (matchbox.isEmpty()) {
-            //Make function for win conditions
+            if(cpu == player1) {
+              winner(player2.getSide());
+            }
+            else if(cpu == player2) {
+              winner(player1.getSide());
+            }
           }
           else {
             List<Bead> beads = matchbox.getBeads();
             System.out.println(beads.toString());
             if(mode == "slow") {
-              matchbox.renderBeads();//MOVES NOT RENDERING
-            }
-            Bead chosenbead = beads.get(new Random().nextInt(beads.size()));
-            movePawnAuto(chosenbead);
+              matchbox.renderBeads(board); //Render beads on board
+              
+
+            }  
+
+            chosenBead = beads.get(new Random().nextInt(beads.size()));
+            movePawnAuto(chosenBead);
             break;
             }
           }
-            /*    else {
-          System.out.println("CANNOT RECOGNIZE BOARDSTATE");
-          conthb n0;
-
-          System.out.println(Arrays.deepToString(board.getPieces()));
-          System.out.println(Arrays.deepToString(boards[i].getPieces()));
-          System.out.println("-----------");
-        }
-        */
       }
     }
-    
+
+    //Checks win conditions for winning boardstate
+    private static void checkWin() {
+      //Check board for available moves
+      boolean hasMoves = false;
+      char[][] currState = board.getPieces();
+
+      //Check for available moves on the board
+      //If no moves, winner = currPlayer
+      for(Square square : board.getSquares()) {
+        if(square.hasPiece) {
+          Pawn pawn = (Pawn) square.getChildren().get(0);
+          if(pawn.getColor() == currPlayer.getColor()) {
+            moves = pawn.getMoves(board, square);
+            System.out.println(moves.toString());
+            if(!moves.isEmpty()) {
+              hasMoves = true;
+            }
+          }
+        }
+      }
+      if(hasMoves == false) {
+        winner(currPlayer.getSide());
+      }
+      //Check for pawns
+      //if no white pawns, winner = black
+      else if(!board.deepContains(currState, 'W')) {
+        winner("black");
+      }
+      //if no black pawns, winner = white
+      else if(!board.deepContains(currState, 'B')) {
+        winner("white");
+      }
+      //if no pawns, winner = currPlayer
+      else if(!board.deepContains(currState, 'W') && !board.deepContains(currState, 'B')) {
+        winner(currPlayer.getSide());
+      }
+      //if pawn reaches other side of board, winner = currPlayer
+      else {
+        for(Square square : board.getSquares()) {
+          if(square.hasPiece) {
+            Pawn pawn = (Pawn) square.getChildren().get(0);
+            if(pawn.getColor() == currPlayer.getColor()) {
+              if(currPlayer.getSide() == "black") {
+                if(pawn.getXPos() == 2) {
+                  winner(currPlayer.getSide());
+                }
+              }
+              else if(currPlayer.getSide() == "white") {
+                if(pawn.getXPos() == 0) {
+                  winner(currPlayer.getSide());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    //Assigns winning user
+    private static User winner(String winColor) {
+      winner = null;
+      if(player1.getSide() == winColor) {
+        System.out.println(winColor + "wins");
+        win = true;
+        winner = player1;
+      }
+      else if(player2.getSide() == winColor) {
+        System.out.println(winColor + "wins");
+        win = true;
+        winner = player2;
+      }
+      else {
+        System.out.println("Winner cannot be Assigned");
+      }
+      return winner;
+    }
+
+    //Reset the board for a new game
+    public static void reset() {
+      //Check if loser is a robot
+      //If so, punish the robot
+      if(winner == player1) {
+        if(player2 instanceof Robot) {
+          punish((Robot)player2);
+        }
+      }
+      else if(winner == player2) {
+        if(player1 instanceof Robot) {
+          punish((Robot)player1);
+        }
+      }
+      //Reset board
+      win = false;
+      //Remove all pawns from board
+      for(Square square : board.getSquares()) {
+        if(square.hasPiece) {
+          board.removePawn(square);
+        }
+      }
+      //Disable moves
+      disableMoves();
+      //Empty moves
+      moves.clear();
+      //Generate new board
+      board.generateBox(start);
+      //Reset currPlayer
+      currPlayer = player1;
+      winner =  null;
+      playTurn(board, currPlayer);
+    }
+
+    //Punish the robot for losing
+    //Remove the last selected bead from the matchbox
+    private static void punish(Robot cpu) {
+      if(chosenBead != null) {
+        System.out.println("Punishing " + cpu.toString() + " for losing: " + chosenBead.toString() + " removed");
+        cpu.getMatchbox(chosenBead).removeBead(chosenBead);
+      }
+    }
 }
