@@ -107,7 +107,7 @@ public class Main extends Application{
         start.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e) {
-                if(modeSelect.getValue() == "Auto") {
+                if(modeSelect.getValue() == "Slow") {
                     game = new Game(gamePane, "slow"); //Start slow mode
                 }
                 else if(modeSelect.getValue() == "Fast") {
