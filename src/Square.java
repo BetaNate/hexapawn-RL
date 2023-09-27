@@ -41,8 +41,13 @@ public class Square extends StackPane {
       this.pieceType = piece;
    }
 
-   public char getPiece() {
+   public char getPieceType() {
       return this.pieceType;
    }
-
+   
+   public Pawn getPawn() {
+      Pawn pawn = (Pawn)getChildren().get(0);
+      return pawn;
+   }
 }
+

@@ -1,6 +1,7 @@
 import javafx.scene.layout.*;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
+import java.util.Arrays;
 
 public class Board extends GridPane{
     private final GridPane board;
@@ -12,11 +13,14 @@ public class Board extends GridPane{
     public Board(GridPane board, char[][] state) {
         this.board = board;
         this.state = state;
-        generateBox(this.board, this.state);
+        generateBox(this.state);
     }
 
-    private void generateBox(GridPane board, char[][] state) {
-
+    public void generateBox(char[][] state) {
+        if (!board.getChildren().isEmpty()) {
+                board.getChildren().clear();
+                squares.clear();
+        }
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
                 Square square = new Square(i,j);
@@ -26,13 +30,22 @@ public class Board extends GridPane{
                 square.setPrefWidth(100);
                 square.setBorder(new Border(new BorderStroke(Color.BLACK,
                     BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-                board.add(square,j,i,1,1);
+                square.setStyle("-fx-background-color: white;");
+                this.board.add(square,j,i,1,1);
                 squares.add(square);
             }
         }
         addPawns();
     }
  
+    public double getCenterX() {
+        return board.getWidth();
+    }
+
+    public double getCenterY() {
+        return board.getHeight();
+    }
+    
     public void addPawn(Square square, Pawn pawn) {
         square.getChildren().add(pawn);
         square.hasPiece = true;
@@ -45,11 +58,13 @@ public class Board extends GridPane{
     }
 
     public Pawn removePawn(Square square) {
+        if(!square.hasPiece) {
+            return null;
+        }
         Pawn pawn = (Pawn)square.getChildren().get(0);
         square.getChildren().remove(0);
         square.hasPiece = false;
         square.setPiece('E');
-        
         return pawn;
       }
 
@@ -58,10 +73,10 @@ public class Board extends GridPane{
             if(square.hasPiece) {
                 continue;
             }
-            if(square.getPiece() == 'B') {
+            if(square.getPieceType() == 'B') {
                 addPawn(square, new Pawn(Color.BLACK, square.x, square.y, 30));
             }
-            if(square.getPiece() == 'W') {
+            if(square.getPieceType() == 'W') {
                 addPawn(square, new Pawn(Color.WHITE, square.x, square.y, 30));
             }
         }
@@ -71,7 +86,7 @@ public class Board extends GridPane{
         char[][] pieces = new char[size][size];
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
-                pieces[i][j] = getSquare(i, j).getPiece();
+                pieces[i][j] = getSquare(i, j).getPieceType();
             }
         }
         return pieces;
@@ -85,6 +100,31 @@ public class Board extends GridPane{
         }
     
         return null;
+    }
+
+    //Check if boardstate contains a value
+    public boolean deepContains(char[][] pieces, char val) {
+        boolean hasVal = false;
+
+        for(int i = 0; i < pieces.length; i++) {
+            for(int j = 0; j < pieces.length; j++) {
+                if(pieces[i][j] == val) {
+                    hasVal = true;
+                }
+            }
+        }
+        return hasVal;
+    }
+
+    public boolean deepContains(ArrayList<char[][]> states, char[][] val) {
+        boolean hasVal = false;
+
+        for(char[][] state : states) {
+            if(Arrays.deepEquals(state, val)) {
+                hasVal = true;
+            }
+        }
+        return hasVal;
     }
 
     public ArrayList<Square> getSquares() {
