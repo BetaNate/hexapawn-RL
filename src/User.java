@@ -1,3 +1,13 @@
+/*
+ * Author: Nathan J. Rowe
+ * Class Description:
+ * Class for User
+ * Input: name: name of user, side: side that user is playing
+ * Used in Game.java for game setup
+ * name should always be set to "player" in Game.java for user
+ * side should always be set to "black" or "white" in Game.java for user
+ * For HER, see Robot.java
+ */
 import javafx.scene.paint.Color;
 
 public class User {
@@ -6,10 +16,15 @@ public class User {
 	private Color color;
 
 	public User(String name, String side) {
-		this.name = name;
+        this.name = name;
         this.side = side;
 	}
 	
+/*
+ * ------------------------
+ *       Getters
+ * ------------------------
+ */
 	public final String getName() {
 		return name ;
 	}
@@ -18,6 +33,8 @@ public class User {
         return side;
     }
 
+    //Method to get the user's color
+    //Get color based on side
 	public final Color getColor() {
 		switch(side.toLowerCase()) {
 			case "black":
